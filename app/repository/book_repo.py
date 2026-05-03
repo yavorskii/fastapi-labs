@@ -1,20 +1,32 @@
-from uuid import uuid4, UUID
-from app.models.storage import books_db
+from sqlalchemy.orm import Session
+from app.models.book_model import BookModel
 
 class BookRepository:
-    async def get_all(self):
-        return books_db
+    async def get_all(self, db: Session, limit: int, offset: int, status=None, author=None):
+        query = db.query(BookModel)
+        
+        
+        if status:
+            query = query.filter(BookModel.status == status)
+        if author:
+            query = query.filter(BookModel.author.ilike(f"%{author}%"))
+        
+        return query.offset(offset).limit(limit).all()
 
-    async def get_by_id(self, book_id: UUID):
-        return next((b for b in books_db if b["id"] == book_id), None)
+    async def add(self, db: Session, book_data: dict):
+        db_book = BookModel(**book_data)
+        db.add(db_book)
+        db.commit()
+        db.refresh(db_book)
+        return db_book
 
-    async def add(self, book_data: dict):
-        book_data["id"] = uuid4()
-        books_db.append(book_data)
-        return book_data
+    async def get_by_id(self, db: Session, book_id):
+        return db.query(BookModel).filter(BookModel.id == book_id).first()
 
-    async def delete(self, book_id: UUID):
-        global books_db
-        initial_len = len(books_db)
-        books_db[:] = [b for b in books_db if b["id"] != book_id]
-        return len(books_db) < initial_len
+    async def delete(self, db: Session, book_id):
+        book = db.query(BookModel).filter(BookModel.id == book_id).first()
+        if book:
+            db.delete(book)
+            db.commit()
+            return True
+        return False

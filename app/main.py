@@ -1,7 +1,11 @@
 from fastapi import FastAPI
+from app.database import engine, Base
 from app.api.books import router
+from app.models.book_model import BookModel 
 
-app = FastAPI(title="Library API")
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="Library API - Lab 2")
 
 app.include_router(router)
 

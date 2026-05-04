@@ -40,4 +40,4 @@ class MongoBookRepository:
         if not ObjectId.is_valid(book_id):
             return False
         result = await self.collection.delete_one({"_id": ObjectId(book_id)})
-        return result.deleted_count > 
+        return result.deleted_count > 0

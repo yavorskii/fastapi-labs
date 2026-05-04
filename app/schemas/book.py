@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 from enum import Enum
 from typing import Optional
+from typing import List
 
 class BookStatus(str, Enum):
     AVAILABLE = "наявна"
@@ -19,3 +20,7 @@ class BookCreate(BookBase):
 
 class Book(BookBase):
     id: UUID
+
+class BookListResponse(BaseModel):
+    items: List[Book] 
+    next_cursor: Optional[UUID] = None

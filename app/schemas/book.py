@@ -1,8 +1,6 @@
 from pydantic import BaseModel, Field
-from uuid import UUID
 from enum import Enum
-from typing import Optional
-from typing import List
+from typing import Optional, List
 
 class BookStatus(str, Enum):
     AVAILABLE = "наявна"
@@ -19,8 +17,10 @@ class BookCreate(BookBase):
     pass
 
 class Book(BookBase):
-    id: UUID
+    id: str
 
 class BookListResponse(BaseModel):
-    items: List[Book] 
-    next_cursor: Optional[UUID] = None
+    items: List[Book]
+    total: int
+    limit: int
+    offset: int

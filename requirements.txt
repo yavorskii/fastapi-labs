@@ -1,5 +1,6 @@
-fastapi
-uvicorn
+flask
+flask-restful
+flasgger
 motor
 dnspython
 pydantic

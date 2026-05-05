@@ -1,7 +1,7 @@
 flask
 flask-restful
 flasgger
-motor
+pymongo
 dnspython
 pydantic
 pydantic-settings

@@ -1,6 +1,5 @@
 from flask import request
 from flask_restful import Resource
-import asyncio
 from app.repository.mongo_repo import MongoBookRepository
 from app.database import db
 
@@ -34,8 +33,8 @@ class BookListResource(Resource):
         status = request.args.get('status')
         
         repo = MongoBookRepository(db)
-        books = asyncio.run(repo.get_all(db, limit, offset, status, author))
-        total = asyncio.run(db.books.count_documents({}))
+        books = repo.get_all(db, limit, offset, status, author)
+        total = db.books.count_documents({})
         
         return {
             "items": books,
@@ -75,7 +74,7 @@ class BookListResource(Resource):
         """
         data = request.get_json()
         repo = MongoBookRepository(db)
-        new_book = asyncio.run(repo.add(db, data))
+        new_book = repo.add(db, data)
         return new_book, 201
 
 class BookResource(Resource):
@@ -95,7 +94,7 @@ class BookResource(Resource):
             description: Book not found
         """
         repo = MongoBookRepository(db)
-        book = asyncio.run(repo.get_by_id(db, book_id))
+        book = repo.get_by_id(db, book_id)
         if not book:
             return {"message": "Book not found"}, 404
         return book, 200
@@ -116,7 +115,7 @@ class BookResource(Resource):
             description: Book not found
         """
         repo = MongoBookRepository(db)
-        success = asyncio.run(repo.delete(db, book_id))
+        success = repo.delete(db, book_id)
         if not success:
             return {"message": "Book not found"}, 404
         return "", 204

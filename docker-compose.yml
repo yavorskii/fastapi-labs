@@ -17,7 +17,8 @@ services:
       - "8000:8000"
     environment:
       - MONGO_URL=mongodb://user:password@db:27017
-    command: python app/main_flask.py
+      - PYTHONPATH=/code
+    command: python -m app.main_flask
     depends_on:
       - db
 

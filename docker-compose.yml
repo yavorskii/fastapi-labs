@@ -1,7 +1,7 @@
 services:
   db:
     image: mongo:latest
-    container_name: library_mongo
+    container_name: library_mongo_flask
     ports:
       - "27017:27017"
     environment:
@@ -12,11 +12,12 @@ services:
 
   app:
     build: .
-    container_name: library_api_mongo
+    container_name: library_api_flask
     ports:
       - "8000:8000"
     environment:
       - MONGO_URL=mongodb://user:password@db:27017
+    command: python app/main_flask.py
     depends_on:
       - db
 

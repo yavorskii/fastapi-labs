@@ -11,13 +11,10 @@ class MongoBookRepository:
         if status:
             query["status"] = status
         if author:
-            
             query["author"] = {"$regex": author, "$options": "i"}
-            
         
         cursor = self.collection.find(query).skip(offset).limit(limit)
         books = await cursor.to_list(length=limit)
-        
         
         for book in books:
             book["id"] = str(book.pop("_id"))

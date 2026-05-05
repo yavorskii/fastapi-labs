@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.schemas.book import Book, BookCreate, BookStatus, BookListResponse 
 from app.services.book_service import BookService
 from app.database import get_db  
+from app.api.deps import get_current_user 
 from typing import List, Optional
 
 router = APIRouter(prefix="/books", tags=["Books"])
@@ -25,12 +26,22 @@ async def get_book(book_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Book not found")
     return book
 
+
 @router.post("/", response_model=Book, status_code=status.HTTP_201_CREATED)
-async def create_book(book: BookCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def create_book(
+    book: BookCreate, 
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: str = Depends(get_current_user) 
+):
     return await service.repo(db).add(db, book.model_dump())
 
+
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_book(book_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def delete_book(
+    book_id: str, 
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: str = Depends(get_current_user) 
+):
     success = await service.repo(db).delete(db, book_id)
     if not success:
         raise HTTPException(status_code=404, detail="Book not found")

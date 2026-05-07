@@ -1,13 +1,12 @@
 import uuid
-from sqlalchemy import Column, String, Integer, Enum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Integer, Enum, Uuid
 from app.database import Base
 from app.schemas.book import BookStatus 
 
 class BookModel(Base):
     __tablename__ = "books"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
     author = Column(String, nullable=False)
     description = Column(String, nullable=True)

@@ -10,6 +10,17 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  mock-api:
+    image: stoplight/prism:4
+    container_name: library-mock-service
+    ports:
+      - "4010:4010"
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+    command: mock -h 0.0.0.0 /openapi.yaml
+    depends_on:
+      - app
+
   redis:
     image: redis:latest
     container_name: book-cache

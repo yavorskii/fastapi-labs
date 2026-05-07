@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: Library API Mock
+  description: Mock service for Library API based on Lab 7
+  version: 8.0.0
+paths:
+  /auth/token:
+    post:
+      tags:
+        - Auth
+      summary: Login for access and refresh tokens
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Successful Login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Get list of books
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookListResponse'
+        '429':
+          description: Rate Limit Exceeded
+  /books/{book_id}:
+    get:
+      tags:
+        - Books
+      summary: Get book by ID
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+components:
+  schemas:
+    BookStatus:
+      type: string
+      enum:
+        - "наявна"
+        - "видана"
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - year
+        - status
+      properties:
+        id:
+          type: string
+          example: "65f1a..."
+        title:
+          type: string
+          example: "The Great Gatsby"
+        author:
+          type: string
+          example: "F. Scott Fitzgerald"
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BookStatus'
+        year:
+          type: integer
+          example: 1925
+    BookListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          example: "bearer"

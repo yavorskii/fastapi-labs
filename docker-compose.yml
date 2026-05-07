@@ -10,6 +10,12 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  redis:
+    image: redis:latest
+    container_name: book-cache
+    ports:
+      - "6379:6379"
+
   app:
     build: .
     container_name: library_api_fastapi
@@ -17,11 +23,12 @@ services:
       - "8000:8000"
     environment:
       - MONGO_URL=mongodb://user:password@db:27017
+      - REDIS_HOST=redis
       - PYTHONPATH=/code
-    
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - db
+      - redis
 
 volumes:
   mongo_data:

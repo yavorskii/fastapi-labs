@@ -55,3 +55,27 @@ async def test_get_books_filters_by_status_and_author():
         data = res.json()
         assert [b["title"] for b in data["items"]] == ["B"]
         assert data["next_cursor"] is None
+
+
+@pytest.mark.anyio
+async def test_create_book_then_list_contains_it():
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as ac:
+        payload = {
+            "title": "New Book",
+            "author": "Test Author",
+            "description": "Desc",
+            "year": 2024,
+            "status": "наявна",
+        }
+        created = await ac.post("/books/", json=payload)
+        assert created.status_code == 201
+        created_data = created.json()
+        assert created_data["title"] == payload["title"]
+        assert created_data["author"] == payload["author"]
+        assert "id" in created_data
+
+        listed = await ac.get("/books/", params={"size": 10, "author": "Test Author"})
+        assert listed.status_code == 200
+        listed_items = listed.json()["items"]
+        assert any(item["id"] == created_data["id"] for item in listed_items)

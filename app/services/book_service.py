@@ -2,6 +2,7 @@ from app.repository.book_repo import BookRepository
 from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import Optional
+from app.schemas.book import BookCreate
 
 class BookService:
     def __init__(self):
@@ -15,3 +16,6 @@ class BookService:
             "items": books,
             "next_cursor": next_cursor
         }
+
+    async def create_book(self, db: Session, book: BookCreate):
+        return await self.repo.add(db, book.model_dump())

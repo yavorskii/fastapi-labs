@@ -20,3 +20,10 @@ async def get_books(
 ):
     return await service.get_books(db, size, cursor, status, author)
 
+
+@router.post("/", response_model=Book, status_code=status.HTTP_201_CREATED)
+async def create_book(
+    book: BookCreate,
+    db: Session = Depends(get_db),
+):
+    return await service.create_book(db, book)

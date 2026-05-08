@@ -23,7 +23,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://user:password@db:5432/library
+      DATABASE_URL: postgresql://user:password@host.docker.internal:5432/library
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy  

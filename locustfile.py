@@ -6,7 +6,3 @@ class LibraryUser(HttpUser):
     @task
     def get_books(self):
         self.client.get("/books")
-
-    @task(3)
-    def get_root(self):
-        self.client.get("/")

@@ -22,6 +22,7 @@ class MongoBookRepository:
     def add(self, db, book_data: dict):
         result = self.collection.insert_one(book_data)
         book_data["id"] = str(result.inserted_id)
+        book_data.pop("_id", None)
         return book_data
 
     def get_by_id(self, db, book_id: str):

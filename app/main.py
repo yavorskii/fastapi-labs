@@ -3,7 +3,7 @@ from app.api.books import router as books_router
 from app.api.auth import router as auth_router 
 
 app = FastAPI(
-    title="Library API - Lab 6",
+    title="Library API - Lab 7",
     description="JWT Auth з Access & Refresh tokens",
     version="6.0.0"
 )

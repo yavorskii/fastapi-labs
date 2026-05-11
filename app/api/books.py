@@ -10,7 +10,7 @@ from typing import List, Optional
 router = APIRouter(prefix="/books", tags=["Books"])
 service = BookService()
 
-@router.get("/", response_model=BookListResponse)
+@router.get("/", response_model=BookListResponse, responses={429: {"description": "Too Many Requests"}})
 async def get_books(
     request: Request,
     status: Optional[BookStatus] = None, 
@@ -24,7 +24,7 @@ async def get_books(
     await rate_limit(request, user_id)
     return await service.get_books(db, limit, offset, status, author)
 
-@router.get("/{book_id}", response_model=Book)
+@router.get("/{book_id}", response_model=Book, responses={429: {"description": "Too Many Requests"}, 404: {"description": "Book not found"}})
 async def get_book(
     request: Request,
     book_id: str, 
@@ -39,7 +39,7 @@ async def get_book(
         raise HTTPException(status_code=404, detail="Book not found")
     return book
 
-@router.post("/", response_model=Book, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=Book, status_code=status.HTTP_201_CREATED, responses={429: {"description": "Too Many Requests"}})
 async def create_book(
     request: Request,
     book: BookCreate, 
@@ -49,7 +49,7 @@ async def create_book(
     await rate_limit(request, current_user.get("username"))
     return await service.repo(db).add(db, book.model_dump())
 
-@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT, responses={429: {"description": "Too Many Requests"}, 404: {"description": "Book not found"}})
 async def delete_book(
     request: Request,
     book_id: str, 

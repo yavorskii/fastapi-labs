@@ -14,7 +14,7 @@ app.include_router(books_router)
 @app.get("/", tags=["Root"])
 async def root():
     return {
-        "message": "Welcome to Library API (Lab 6)",
+        "message": "Welcome to Library API (Lab 7)",
         "auth": "JWT with Refresh Flow enabled",
         "docs": "/docs"
     }

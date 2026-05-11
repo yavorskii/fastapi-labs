@@ -3,7 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.schemas.book import Book, BookCreate, BookStatus, BookListResponse 
 from app.services.book_service import BookService
 from app.database import get_db  
-from app.api.deps import get_current_user 
+from app.api.deps import get_current_user, get_current_active_user 
 from app.core.rate_limiter import rate_limit
 from typing import List, Optional
 
@@ -44,7 +44,7 @@ async def create_book(
     request: Request,
     book: BookCreate, 
     db: AsyncIOMotorDatabase = Depends(get_db),
-    current_user: dict = Depends(get_current_user) 
+    current_user: dict = Depends(get_current_active_user) 
 ):
     await rate_limit(request, current_user.get("username"))
     return await service.repo(db).add(db, book.model_dump())
@@ -54,7 +54,7 @@ async def delete_book(
     request: Request,
     book_id: str, 
     db: AsyncIOMotorDatabase = Depends(get_db),
-    current_user: dict = Depends(get_current_user) 
+    current_user: dict = Depends(get_current_active_user) 
 ):
     await rate_limit(request, current_user.get("username"))
     

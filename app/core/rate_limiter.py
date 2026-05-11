@@ -1,4 +1,5 @@
 import time
+import uuid
 import redis.asyncio as redis
 from fastapi import Request, HTTPException, status
 
@@ -15,7 +16,7 @@ async def rate_limit(request: Request, user_id: str | None = None):
     limit, period = RATE_LIMITS[limit_type]
 
     key = f"rate_limit:{identity}"
-    now = int(time.time())
+    now = time.time()
     window_start = now - period
 
     await r.zremrangebyscore(key, 0, window_start)
@@ -28,5 +29,5 @@ async def rate_limit(request: Request, user_id: str | None = None):
             detail="Too many requests"
         )
 
-    await r.zadd(key, {str(now): now})
+    await r.zadd(key, {f"{now}:{uuid.uuid4()}": now})
     await r.expire(key, period)

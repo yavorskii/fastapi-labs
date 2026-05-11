@@ -21,7 +21,7 @@ async def get_books(
     current_user: Optional[dict] = Depends(get_current_user)
 ):
     user_id = current_user.get("username") if current_user else None
-    await rate_limit(request, user_id)
+    # await rate_limit(request, user_id)  # Disabled for Load Testing (Lab 9)
     return await service.get_books(db, limit, offset, status, author)
 
 @router.get("/{book_id}", response_model=Book)

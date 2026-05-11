@@ -55,6 +55,27 @@ paths:
                 $ref: '#/components/schemas/BookListResponse'
         '429':
           description: Rate Limit Exceeded
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      security:
+        - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookBase'
+      responses:
+        '201':
+          description: Book Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '401':
+          description: Not authenticated
   /books/{book_id}:
     get:
       tags:
@@ -76,7 +97,35 @@ paths:
         '404':
           description: Book not found
 components:
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: auth/token
+          scopes: {}
   schemas:
+    BookBase:
+      type: object
+      required:
+        - title
+        - author
+        - year
+      properties:
+        title:
+          type: string
+          example: "New Book"
+        author:
+          type: string
+          example: "John Doe"
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BookStatus'
+        year:
+          type: integer
+          example: 2024
     BookStatus:
       type: string
       enum:

@@ -3,6 +3,90 @@ info:
   title: Library API Mock
   description: Mock service for Library API based on Lab 7
   version: 8.0.0
+components:
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: auth/token
+          scopes: {}
+  schemas:
+    BookStatus:
+      type: string
+      enum:
+        - "наявна"
+        - "видана"
+    BookBase:
+      type: object
+      required:
+        - title
+        - author
+        - year
+      properties:
+        title:
+          type: string
+          example: "New Book"
+        author:
+          type: string
+          example: "John Doe"
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BookStatus'
+        year:
+          type: integer
+          example: 2024
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - year
+        - status
+      properties:
+        id:
+          type: string
+          example: "65f1a..."
+        title:
+          type: string
+          example: "The Great Gatsby"
+        author:
+          type: string
+          example: "F. Scott Fitzgerald"
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BookStatus'
+        year:
+          type: integer
+          example: 1925
+    BookListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          example: "bearer"
 paths:
   /auth/token:
     post:
@@ -55,6 +139,29 @@ paths:
                 $ref: '#/components/schemas/BookListResponse'
         '429':
           description: Rate Limit Exceeded
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      security:
+        - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookBase'
+      responses:
+        '201':
+          description: Book Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '401':
+          description: Not authenticated
+        '429':
+          description: Rate Limit Exceeded
   /books/{book_id}:
     get:
       tags:
@@ -75,59 +182,26 @@ paths:
                 $ref: '#/components/schemas/Book'
         '404':
           description: Book not found
-components:
-  schemas:
-    BookStatus:
-      type: string
-      enum:
-        - "наявна"
-        - "видана"
-    Book:
-      type: object
-      required:
-        - id
-        - title
-        - author
-        - year
-        - status
-      properties:
-        id:
-          type: string
-          example: "65f1a..."
-        title:
-          type: string
-          example: "The Great Gatsby"
-        author:
-          type: string
-          example: "F. Scott Fitzgerald"
-        description:
-          type: string
-          nullable: true
-        status:
-          $ref: '#/components/schemas/BookStatus'
-        year:
-          type: integer
-          example: 1925
-    BookListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Book'
-        total:
-          type: integer
-        limit:
-          type: integer
-        offset:
-          type: integer
-    Token:
-      type: object
-      properties:
-        access_token:
-          type: string
-        refresh_token:
-          type: string
-        token_type:
-          type: string
-          example: "bearer"
+        '429':
+          description: Rate Limit Exceeded
+    delete:
+      tags:
+        - Books
+      summary: Delete a book
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Book deleted successfully
+        '401':
+          description: Not authenticated
+        '404':
+          description: Book not found
+        '429':
+          description: Rate Limit Exceeded
